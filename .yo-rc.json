@@ -1,0 +1,32 @@
+{
+  "generator-jhipster": {
+    "applicationType": "monolith",
+    "authenticationType": "jwt",
+    "baseName": "ToDoList",
+    "buildTool": "maven",
+    "cacheProvider": null,
+    "clientFramework": "angular",
+    "clientTestFrameworks": [],
+    "clientTheme": "none",
+    "creationTimestamp": 1775393364702,
+    "databaseType": "sql",
+    "devDatabaseType": "postgresql",
+    "enableHibernateCache": null,
+    "enableTranslation": false,
+    "entities": [],
+    "feignClient": null,
+    "jhipsterVersion": "9.0.0",
+    "jwtSecretKey": "ZDQ1NDFmZGZhNDg2N2Y4OGYzNmMxYTkxMGRhZTkyZjNmMmNiYWRhMGU2ODQyZjM5NmZjMmE2ZmRlNzQwNDgzMmRkYjdmYjJjZDQzY2E1NmY1ZTcxNWFiY2ZjY2EyNzY5ZDc2YjZiMjFhNDE3ODhjYzFlMDVkZjlkMDBhYjM3YTc=",
+    "microfrontend": null,
+    "microfrontends": [],
+    "nativeLanguage": "en",
+    "packageName": "com.mannn.todolist",
+    "prodDatabaseType": "postgresql",
+    "reactive": true,
+    "serverPort": null,
+    "serviceDiscoveryType": null,
+    "syncUserWithIdp": null,
+    "testFrameworks": [],
+    "withAdminUi": false
+  }
+}
