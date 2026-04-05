@@ -124,12 +124,17 @@ body {
   min-height: calc(100vh - 140px);
 }
 
-footer {
+.footer {
   background: var(--bg-secondary) !important;
   border-top: 1px solid var(--border-color) !important;
-  padding: var(--space-md) 0 !important;
+  padding: var(--space-lg) 0 !important;
   font-size: 0.85rem;
-  color: var(--text-muted) !important;
+  color: var(--text-secondary) !important; /* Use text-secondary for better contrast */
+  transition: all var(--transition-normal);
+
+  .container {
+    opacity: 0.8;
+  }
 }
 
 .container-fluid {
