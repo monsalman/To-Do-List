@@ -21,6 +21,9 @@ logging:
     com.mannn.todolist: DEBUG
 
 spring:
+  docker:
+    compose:
+      enabled: false
   devtools:
     restart:
       enabled: true
@@ -31,9 +34,10 @@ spring:
     serialization:
       indent-output: true
   liquibase:
-    # Remove 'faker' if you do not want the sample data to be loaded automatically
     contexts: dev, faker
     url: jdbc:postgresql://localhost:5432/ToDoList
+    user: postgres
+    password: salman1234
   mail:
     host: localhost
     port: 25
@@ -41,6 +45,8 @@ spring:
     cache-duration: PT1S # 1 second, see the ISO 8601 standard
   r2dbc:
     url: r2dbc:postgresql://localhost:5432/ToDoList
+    username: postgres
+    password: salman1234
   thymeleaf:
     cache: false
 
