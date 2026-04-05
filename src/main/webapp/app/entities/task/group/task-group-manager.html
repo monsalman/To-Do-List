@@ -1,0 +1,138 @@
+<div class="td-page">
+  <div class="group-header animate-fade-in-up">
+    <h1>{{ 'group.title' | translate }}</h1>
+    <button class="td-btn td-btn-primary" (click)="openCreateForm()" id="create-group-btn">
+      <span>＋</span> {{ 'group.createGroup' | translate }}
+    </button>
+  </div>
+
+  <div class="group-layout animate-fade-in-up" style="animation-delay: 0.1s">
+    <!-- Groups List -->
+    <div class="groups-list">
+      @if (groups().length === 0) {
+        <div class="empty-state">
+          <div class="empty-icon">👥</div>
+          <p>{{ 'group.noGroups' | translate }}</p>
+        </div>
+      } @else {
+        <div class="stagger-children">
+          @for (group of groups(); track group.id) {
+            <div class="group-item td-card" [class.selected]="selectedGroup()?.id === group.id" (click)="selectGroup(group)">
+              <div class="group-color-bar" [style.background]="group.color"></div>
+              <div class="group-info">
+                <h3>{{ group.name }}</h3>
+                @if (group.description) {
+                  <p>{{ group.description }}</p>
+                }
+                <div class="group-meta">
+                  <span>👤 {{ group.members?.length || 0 }} {{ 'group.members' | translate }}</span>
+                  <span>📋 {{ group.taskCount || 0 }} {{ 'group.tasks' | translate }}</span>
+                </div>
+              </div>
+              <div class="group-actions">
+                <button class="td-btn td-btn-ghost td-btn-sm" (click)="openEditForm(group); $event.stopPropagation()">✏️</button>
+                <button class="td-btn td-btn-ghost td-btn-sm" (click)="deleteGroup(group); $event.stopPropagation()">🗑️</button>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- Group Detail Panel -->
+    <div class="group-detail">
+      @if (selectedGroup(); as group) {
+        <div class="detail-header">
+          <div class="detail-color" [style.background]="group.color"></div>
+          <div>
+            <h2>{{ group.name }}</h2>
+            @if (group.description) {
+              <p>{{ group.description }}</p>
+            }
+          </div>
+        </div>
+
+        <div class="members-section">
+          <h3>{{ 'group.members' | translate }} ({{ group.members?.length || 0 }})</h3>
+
+          <div class="add-member-form">
+            <input
+              class="td-input"
+              type="text"
+              [(ngModel)]="newMemberLogin"
+              [placeholder]="i18n.t('group.memberLogin')"
+              (keyup.enter)="addMember()"
+              id="add-member-input"
+            />
+            <button class="td-btn td-btn-primary td-btn-sm" (click)="addMember()" id="add-member-btn">
+              {{ 'group.addMember' | translate }}
+            </button>
+          </div>
+
+          <div class="members-list">
+            @if (group.members) {
+              @for (member of group.members; track member) {
+                <div class="member-item">
+                  <div class="member-avatar">{{ member.charAt(0).toUpperCase() }}</div>
+                  <span class="member-name">{{ member }}</span>
+                  @if (member === group.ownerId) {
+                    <span class="td-badge td-badge-status-done">{{ 'group.owner' | translate }}</span>
+                  } @else {
+                    <span class="td-badge td-badge-status-pending">{{ 'group.member' | translate }}</span>
+                    <button class="td-btn td-btn-ghost td-btn-sm" (click)="removeMember(member)">✕</button>
+                  }
+                </div>
+              }
+            }
+          </div>
+        </div>
+      } @else {
+        <div class="empty-state">
+          <div class="empty-icon">📂</div>
+          <p>{{ i18n.currentLang() === 'id' ? 'Pilih grup untuk melihat detail' : 'Select a group to view details' }}</p>
+        </div>
+      }
+    </div>
+  </div>
+</div>
+
+<!-- Group Form Modal -->
+@if (showForm()) {
+  <div class="td-modal-overlay" (click)="cancelForm()">
+    <div class="td-modal" (click)="$event.stopPropagation()" style="max-width: 450px">
+      <div class="td-modal-header">
+        <h2>{{ editingGroup() ? ('group.editGroup' | translate) : ('group.createGroup' | translate) }}</h2>
+        <button class="td-btn td-btn-ghost td-btn-icon" (click)="cancelForm()">✕</button>
+      </div>
+
+      <div class="form-body">
+        <div class="form-group">
+          <label class="td-label">{{ 'group.name' | translate }} *</label>
+          <input class="td-input" type="text" [(ngModel)]="newGroupName" id="group-name-input" autofocus />
+        </div>
+        <div class="form-group">
+          <label class="td-label">{{ 'group.description' | translate }}</label>
+          <textarea class="td-input td-textarea" [(ngModel)]="newGroupDesc" id="group-desc-input"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="td-label">{{ 'group.color' | translate }}</label>
+          <div class="color-picker">
+            @for (color of colors; track color) {
+              <button
+                class="color-swatch"
+                [style.background]="color"
+                [class.selected]="newGroupColor === color"
+                (click)="newGroupColor = color"
+              ></button>
+            }
+          </div>
+        </div>
+      </div>
+
+      <div class="td-modal-actions">
+        <button class="td-btn td-btn-secondary" (click)="cancelForm()">{{ 'task.cancel' | translate }}</button>
+        <button class="td-btn td-btn-primary" (click)="saveGroup()" [disabled]="!newGroupName.trim()">{{ 'task.save' | translate }}</button>
+      </div>
+    </div>
+  </div>
+}

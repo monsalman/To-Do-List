@@ -1,0 +1,122 @@
+<div class="td-page">
+  <!-- Header -->
+  <div class="calendar-header animate-fade-in-up">
+    <h1>{{ 'calendar.title' | translate }}</h1>
+    <div class="calendar-nav">
+      <button class="td-btn td-btn-ghost" (click)="prevMonth()">◀</button>
+      <span class="month-display">{{ monthName() }} {{ year() }}</span>
+      <button class="td-btn td-btn-ghost" (click)="nextMonth()">▶</button>
+      <button class="td-btn td-btn-secondary td-btn-sm" (click)="goToToday()">
+        {{ 'calendar.today' | translate }}
+      </button>
+    </div>
+  </div>
+
+  <div class="calendar-layout animate-fade-in-up" style="animation-delay: 0.1s">
+    <!-- Calendar Grid -->
+    <div class="calendar-grid-container">
+      <!-- Week days header -->
+      <div class="calendar-weekdays">
+        @for (day of weekDays(); track day) {
+          <div class="weekday-label">{{ day }}</div>
+        }
+      </div>
+
+      <!-- Days grid -->
+      <div class="calendar-days">
+        @for (day of calendarDays(); track day.date.toISOString()) {
+          <div
+            class="calendar-day"
+            [class.other-month]="!day.isCurrentMonth"
+            [class.today]="day.isToday"
+            [class.selected]="selectedDay()?.date?.toISOString() === day.date.toISOString()"
+            [class.has-tasks]="day.tasks.length > 0"
+            (click)="selectDay(day)"
+          >
+            <span class="day-number">{{ day.dayOfMonth }}</span>
+            @if (day.tasks.length > 0) {
+              <div class="task-dots">
+                @for (task of day.tasks.slice(0, 3); track task.id) {
+                  <span class="task-dot" [style.background]="getStatusColor(task.status!)"></span>
+                }
+                @if (day.tasks.length > 3) {
+                  <span class="task-more">+{{ day.tasks.length - 3 }}</span>
+                }
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Selected Day Panel -->
+    <div class="day-panel">
+      @if (selectedDay(); as day) {
+        <div class="day-panel-header">
+          <h3>
+            {{
+              day.date.toLocaleDateString(i18n.currentLang() === 'id' ? 'id-ID' : 'en-US', {
+                weekday: 'long',
+                month: 'long',
+                day: 'numeric',
+              })
+            }}
+          </h3>
+          <button class="td-btn td-btn-primary td-btn-sm" (click)="openCreateForDay(day)">＋ {{ 'task.createTask' | translate }}</button>
+        </div>
+
+        @if (day.tasks.length === 0) {
+          <div class="day-empty">
+            <p>{{ 'calendar.noTasksOnDay' | translate }}</p>
+          </div>
+        } @else {
+          <div class="day-tasks stagger-children">
+            @for (task of day.tasks; track task.id) {
+              <div class="day-task-item td-card">
+                <div class="day-task-top">
+                  <span class="day-task-priority" [style.color]="getStatusColor(task.status!)">●</span>
+                  <span class="day-task-title" [class.done]="task.status === 'DONE'">{{ task.title }}</span>
+                </div>
+                <div class="day-task-meta">
+                  <span
+                    class="td-badge td-badge-sm"
+                    [class.td-badge-priority-high]="task.priority === 'HIGH'"
+                    [class.td-badge-priority-medium]="task.priority === 'MEDIUM'"
+                    [class.td-badge-priority-low]="task.priority === 'LOW'"
+                    >{{ getPriorityLabel(task.priority!) }}</span
+                  >
+                  <span
+                    class="td-badge td-badge-sm"
+                    [class.td-badge-status-pending]="task.status === 'PENDING'"
+                    [class.td-badge-status-in-progress]="task.status === 'IN_PROGRESS'"
+                    [class.td-badge-status-done]="task.status === 'DONE'"
+                    >{{ getStatusLabel(task.status!) }}</span
+                  >
+                </div>
+                <div class="day-task-actions">
+                  <button class="td-btn td-btn-ghost td-btn-sm" (click)="openEditDialog(task)">✏️</button>
+                  <button class="td-btn td-btn-ghost td-btn-sm" (click)="openDeleteDialog(task)">🗑️</button>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      } @else {
+        <div class="day-empty">
+          <div class="day-empty-icon">📅</div>
+          <p>{{ i18n.currentLang() === 'id' ? 'Pilih tanggal untuk melihat tugas' : 'Select a date to view tasks' }}</p>
+        </div>
+      }
+    </div>
+  </div>
+</div>
+
+<!-- Create/Edit Dialog -->
+@if (showFormDialog()) {
+  <app-task-form-dialog [task]="editingTask()" [groups]="groups()" (saved)="onFormSaved()" (cancelled)="onFormCancelled()" />
+}
+
+<!-- Delete Dialog -->
+@if (showDeleteDialog()) {
+  <app-task-delete-dialog [task]="deletingTask()" (confirmed)="onDeleteConfirmed()" (cancelled)="onDeleteCancelled()" />
+}

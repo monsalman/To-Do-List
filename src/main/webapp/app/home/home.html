@@ -1,58 +1,145 @@
-<div class="row">
-  <div class="col-md-3">
-    <span class="hipster img-fluid rounded"></span>
-  </div>
-
-  <div class="col-md-9">
-    <h1 class="display-4"><span>Welcome, Java Hipster!</span> (To Do List)</h1>
-
-    <p class="lead">This is your homepage</p>
-
-    <div>
-      @if (account() !== null) {
-        <div class="alert alert-success">
-          @if (account(); as accountRef) {
-            <span id="home-logged-message">You are logged in as user &quot;{{ accountRef.login }}&quot;.</span>
-          }
-        </div>
-      } @else {
-        <div class="alert alert-warning">
-          <span>If you want to </span>
-          <a class="alert-link" (click)="login()">sign in</a
-          ><span
-            >, you can try the default accounts:<br />- Administrator (login=&quot;admin&quot; and password=&quot;admin&quot;) <br />- User
-            (login=&quot;user&quot; and password=&quot;user&quot;).</span
-          >
-        </div>
-
-        <div class="alert alert-warning">
-          <span>You don&apos;t have an account yet?</span>&nbsp;
-          <a class="alert-link" routerLink="/account/register">Register a new account</a>
-        </div>
-      }
+<div class="td-page animate-fade-in py-5">
+  @if (account(); as accountRef) {
+    <!-- Dashboard Header -->
+    <div class="dashboard-header animate-fade-in-up mb-5">
+      <div class="welcome-section">
+        <span class="welcome-label opacity-75">{{ i18n.currentLang() === 'id' ? 'Selamat Datang,' : 'Welcome back,' }}</span>
+        <h1 class="user-name mt-1">{{ accountRef.firstName || accountRef.login }}! 👋</h1>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-primary" routerLink="/tasks" [queryParams]="{ action: 'new' }">
+          <fa-icon [icon]="faPlus" class="me-2"></fa-icon> <span>Tambah Tugas</span>
+        </button>
+      </div>
     </div>
 
-    <p>If you have any questions on JHipster:</p>
+    <!-- Bento Stats Grid -->
+    <div class="stats-grid mb-5">
+      <div class="td-stat-card stat-total animate-fade-in-up" style="animation-delay: 0.1s">
+        <div class="td-stat-value">{{ stats().total }}</div>
+        <div class="td-stat-label">Total Task</div>
+      </div>
+      <div class="td-stat-card stat-pending animate-fade-in-up" style="animation-delay: 0.2s">
+        <div class="td-stat-value">{{ stats().pending }}</div>
+        <div class="td-stat-label">Pending</div>
+      </div>
+      <div class="td-stat-card stat-progress animate-fade-in-up" style="animation-delay: 0.3s">
+        <div class="td-stat-value">{{ stats().inProgress }}</div>
+        <div class="td-stat-label">In Progress</div>
+      </div>
+      <div class="td-stat-card stat-done animate-fade-in-up" style="animation-delay: 0.4s">
+        <div class="td-stat-value">{{ stats().done }}</div>
+        <div class="td-stat-label">Completed</div>
+      </div>
+    </div>
 
-    <ul>
-      <li><a href="https://www.jhipster.tech/" target="_blank" rel="noopener noreferrer">JHipster homepage</a></li>
-      <li>
-        <a href="https://stackoverflow.com/tags/jhipster/info" target="_blank" rel="noopener noreferrer">JHipster on Stack Overflow</a>
-      </li>
-      <li>
-        <a href="https://github.com/jhipster/generator-jhipster/issues?state=open" target="_blank" rel="noopener noreferrer"
-          >JHipster bug tracker</a
+    <div class="dashboard-content animate-fade-in-up mt-5" style="animation-delay: 0.5s">
+      <!-- Recent Tasks List -->
+      <div class="content-section">
+        <div class="section-header">
+          <h2 class="mb-0">Tugas Terbaru</h2>
+          <a routerLink="/tasks" class="view-all">Lihat Semua →</a>
+        </div>
+
+        <div class="recent-list">
+          @if (recentTasks().length === 0) {
+            <div class="card p-5 text-center text-muted border-0 bg-light">
+              <fa-icon [icon]="faClipboardList" size="3x" class="mb-3 opacity-25"></fa-icon>
+              <p>Belum ada tugas.</p>
+            </div>
+          } @else {
+            @for (task of recentTasks(); track task.id) {
+              <div class="mini-task-item mb-3" [routerLink]="['/tasks']">
+                <div class="status-indicator" [class]="getStatusClass(task.status!)"></div>
+                <div class="mini-task-info">
+                  <span class="mini-task-title" [class.done]="task.status === 'DONE'">{{ task.title }}</span>
+                  <span class="mini-task-meta opacity-75">
+                    @if (task.dueDate) {
+                      📅 {{ task.dueDate }}
+                    }
+                    @if (task.groupName) {
+                      • 👥 {{ task.groupName }}
+                    }
+                  </span>
+                </div>
+                <span [class]="getPriorityClass(task.priority!)" class="mini-priority">
+                  {{ task.priority }}
+                </span>
+              </div>
+            }
+          }
+        </div>
+      </div>
+
+      <!-- Sidebar -->
+      <div class="content-section">
+        <div class="section-header">
+          <h2 class="mb-0">Grup Saya</h2>
+          <a routerLink="/groups" class="view-all">Kelola →</a>
+        </div>
+
+        <div class="groups-mini-grid mb-4">
+          @for (group of myGroups().slice(0, 4); track group.id) {
+            <div class="mini-group-card mb-2" [routerLink]="['/groups']" [style.border-left-color]="group.color">
+              <span class="group-name">{{ group.name }}</span>
+              <span class="group-count opacity-75">{{ group.taskCount || 0 }} Tugas</span>
+            </div>
+          }
+        </div>
+
+        <div
+          class="card p-4 text-white border-0 mt-4"
+          routerLink="/calendar"
+          style="cursor: pointer; background: var(--color-primary) !important"
         >
-      </li>
-      <li>
-        <a href="https://gitter.im/jhipster/generator-jhipster" target="_blank" rel="noopener noreferrer">JHipster public chat room</a>
-      </li>
-      <li><a href="https://twitter.com/jhipster" target="_blank" rel="noopener noreferrer">follow &#64;jhipster on Twitter</a></li>
-    </ul>
+          <div class="d-flex align-items-center gap-3">
+            <fa-icon [icon]="faCalendarAlt" size="2x"></fa-icon>
+            <div>
+              <div class="fw-bold">Kalender Tugas</div>
+              <div class="small opacity-75">Cek jadwal mingguanmu</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  } @else {
+    <!-- Modern Welcome Screen -->
+    <div class="welcome-screen py-5 text-center">
+      <div class="hero-badge animate-fade-in mb-4">Production Ready To-Do System</div>
+      <h1 class="hero-title display-3 fw-bold mb-4">Kelola tugasmu dengan <span class="gradient-text">Elegan.</span></h1>
+      <p class="hero-subtitle fs-5 text-secondary opacity-75 mb-5 mx-auto" style="max-width: 600px">
+        Kolaborasi dengan grup, pantau progres lewat kalender interaktif, dan tingkatkan produktivitasmu dengan To-Do List Premium kami.
+      </p>
+      <div class="hero-actions d-flex justify-content-center gap-3 mb-5">
+        <button class="btn btn-primary btn-lg shadow" (click)="login()">Masuk Sekarang</button>
+        <button class="btn btn-outline-dark btn-lg" routerLink="/account/register">Daftar Akun</button>
+      </div>
 
-    <p>
-      <span>If you like JHipster, don&apos;t forget to give us a star on</span>
-      <a href="https://github.com/jhipster/generator-jhipster" target="_blank" rel="noopener noreferrer">GitHub</a>!
-    </p>
-  </div>
+      <div class="features-grid mt-5 pt-5">
+        <div class="row g-4 text-start">
+          <div class="col-md-4">
+            <div class="card p-4 border-0 shadow-sm h-100">
+              <fa-icon [icon]="faLayerGroup" class="text-primary mb-3 fs-3" />
+              <h5 class="fw-bold">Grup Kolaborasi</h5>
+              <p class="small text-secondary opacity-75">Bagi tugas dengan tim atau keluarga dengan fitur Group Management.</p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card p-4 border-0 shadow-sm h-100">
+              <fa-icon [icon]="faCalendarCheck" class="text-primary mb-3 fs-3" />
+              <h5 class="fw-bold">Visual Kalender</h5>
+              <p class="small text-secondary opacity-75">Lihat semua deadline tugasmu dalam satu tampilan kalender yang rapi.</p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card p-4 border-0 shadow-sm h-100">
+              <fa-icon [icon]="faShieldAlt" class="text-primary mb-3 fs-3" />
+              <h5 class="fw-bold">Aman & Privat</h5>
+              <p class="small text-secondary opacity-75">Data tugasmu aman dengan sistem autentikasi JHipster yang terenkripsi.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
 </div>

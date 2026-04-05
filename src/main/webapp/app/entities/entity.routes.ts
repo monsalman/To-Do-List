@@ -11,6 +11,21 @@ const routes: Routes = [
     data: { pageTitle: 'UserManagements' },
     loadChildren: () => import('./admin/user-management/user-management.routes'),
   },
+  {
+    path: 'tasks',
+    data: { pageTitle: 'Tasks' },
+    loadChildren: () => import('./task/task.routes'),
+  },
+  {
+    path: 'groups',
+    data: { pageTitle: 'Groups' },
+    loadComponent: () => import('./task/group/task-group-manager'),
+  },
+  {
+    path: 'calendar',
+    data: { pageTitle: 'Calendar' },
+    loadComponent: () => import('./task/calendar/task-calendar'),
+  },
   /* jhipster-needle-add-entity-route - JHipster will add entity modules routes here */
 ];
 

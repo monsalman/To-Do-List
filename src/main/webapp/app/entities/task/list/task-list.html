@@ -1,0 +1,103 @@
+<div class="td-page">
+  <!-- Header -->
+  <div class="task-list-header animate-fade-in-up">
+    <div class="header-left">
+      <h1>{{ 'task.allTasks' | translate }}</h1>
+    </div>
+    <div class="header-actions">
+      <button class="td-btn td-btn-primary" (click)="openCreateDialog()" id="create-task-btn">
+        <span>＋</span>
+        {{ 'task.createTask' | translate }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters-bar animate-fade-in-up" style="animation-delay: 0.1s">
+    <div class="search-box">
+      <input
+        class="td-input"
+        type="text"
+        [placeholder]="'🔍 ' + i18n.t('task.title') + '...'"
+        [ngModel]="searchQuery()"
+        (ngModelChange)="searchQuery.set($event)"
+        id="search-input"
+      />
+    </div>
+    <div class="filter-group">
+      <select class="td-input td-select" [ngModel]="filterStatus()" (ngModelChange)="filterStatus.set($event)" id="filter-status">
+        <option value="ALL">{{ 'task.all' | translate }} — {{ 'task.status' | translate }}</option>
+        <option value="PENDING">{{ 'task.pendingStatus' | translate }}</option>
+        <option value="IN_PROGRESS">{{ 'task.inProgressStatus' | translate }}</option>
+        <option value="DONE">{{ 'task.doneStatus' | translate }}</option>
+      </select>
+      <select class="td-input td-select" [ngModel]="filterPriority()" (ngModelChange)="filterPriority.set($event)" id="filter-priority">
+        <option value="ALL">{{ 'task.all' | translate }} — {{ 'task.priority' | translate }}</option>
+        <option value="HIGH">{{ 'task.high' | translate }}</option>
+        <option value="MEDIUM">{{ 'task.medium' | translate }}</option>
+        <option value="LOW">{{ 'task.low' | translate }}</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Task Cards -->
+  @if (filteredTasks().length === 0) {
+    <div class="empty-state animate-fade-in-up">
+      <div class="empty-icon">📋</div>
+      <p>{{ 'task.noResults' | translate }}</p>
+    </div>
+  } @else {
+    <div class="task-grid stagger-children">
+      @for (task of filteredTasks(); track task.id) {
+        <div class="task-card td-card" [class.task-done]="task.status === 'DONE'" [class.task-overdue]="isOverdue(task)">
+          <div class="task-card-top">
+            <div class="task-badges">
+              <span [class]="getPriorityClass(task.priority!)">{{ i18n.t('task.' + task.priority!.toLowerCase()) }}</span>
+              <span [class]="getStatusClass(task.status!)" class="hand" (click)="toggleStatus(task)" title="Click to change status">
+                {{ i18n.t('task.' + (task.status === 'IN_PROGRESS' ? 'inProgressStatus' : task.status!.toLowerCase() + 'Status')) }}
+              </span>
+            </div>
+            <div class="task-actions">
+              <button class="td-btn td-btn-ghost td-btn-sm" (click)="openEditDialog(task)" title="Edit">✏️</button>
+              <button class="td-btn td-btn-ghost td-btn-sm" (click)="openDeleteDialog(task)" title="Delete">🗑️</button>
+            </div>
+          </div>
+
+          <h3 class="task-title" [class.title-done]="task.status === 'DONE'">{{ task.title }}</h3>
+
+          @if (task.description) {
+            <p class="task-description">{{ task.description }}</p>
+          }
+
+          <div class="task-card-footer">
+            <div class="task-meta">
+              @if (task.dueDate) {
+                <span class="due-date" [class.overdue]="isOverdue(task)" [class.today]="isToday(task)">
+                  📅 {{ formatDate(task.dueDate) }}
+                </span>
+              }
+              @if (task.groupName) {
+                <span class="group-tag">👥 {{ task.groupName }}</span>
+              } @else if (task.isPrivate) {
+                <span class="private-tag">🔒 {{ 'task.personalTask' | translate }}</span>
+              }
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>
+
+<!-- Create/Edit Dialog -->
+@if (showFormDialog()) {
+  <app-task-form-dialog [task]="editingTask()" [groups]="groups()" (saved)="onFormSaved()" (cancelled)="onFormCancelled()" />
+}
+
+<!-- Delete Dialog -->
+@if (showDeleteDialog()) {
+  <app-task-delete-dialog [task]="deletingTask()" (confirmed)="onDeleteConfirmed()" (cancelled)="onDeleteCancelled()" />
+}
+
+<!-- FAB for mobile -->
+<button class="td-fab" (click)="openCreateDialog()" id="fab-add-task">＋</button>

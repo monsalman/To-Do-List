@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="20260405000001-1" author="todolist">
+        <createTable tableName="jhi_task_group">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="varchar(500)"/>
+            <column name="color" type="varchar(7)" defaultValue="#6C5CE7">
+                <constraints nullable="false"/>
+            </column>
+            <column name="owner_id" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="timestamp" defaultValueComputed="current_timestamp">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="jhi_task_group_member">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="group_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="role" type="varchar(20)" defaultValue="MEMBER">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="jhi_task_group_member"
+                                 baseColumnNames="group_id"
+                                 constraintName="fk_task_group_member_group_id"
+                                 referencedTableName="jhi_task_group"
+                                 referencedColumnNames="id"
+                                 onDelete="CASCADE"/>
+
+        <createIndex indexName="idx_task_group_owner" tableName="jhi_task_group">
+            <column name="owner_id"/>
+        </createIndex>
+
+        <createIndex indexName="idx_task_group_member_user" tableName="jhi_task_group_member">
+            <column name="user_id"/>
+        </createIndex>
+
+        <createIndex indexName="idx_task_group_member_group" tableName="jhi_task_group_member">
+            <column name="group_id"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="20260405000001-2" author="todolist">
+        <createTable tableName="jhi_task">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="title" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="text"/>
+            <column name="due_date" type="date"/>
+            <column name="priority" type="varchar(20)" defaultValue="MEDIUM">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="varchar(20)" defaultValue="PENDING">
+                <constraints nullable="false"/>
+            </column>
+            <column name="is_private" type="boolean" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="group_id" type="bigint"/>
+            <column name="created_date" type="timestamp" defaultValueComputed="current_timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified_date" type="timestamp" defaultValueComputed="current_timestamp">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="jhi_task"
+                                 baseColumnNames="group_id"
+                                 constraintName="fk_task_group_id"
+                                 referencedTableName="jhi_task_group"
+                                 referencedColumnNames="id"
+                                 onDelete="SET NULL"/>
+
+        <createIndex indexName="idx_task_user" tableName="jhi_task">
+            <column name="user_id"/>
+        </createIndex>
+
+        <createIndex indexName="idx_task_group" tableName="jhi_task">
+            <column name="group_id"/>
+        </createIndex>
+
+        <createIndex indexName="idx_task_due_date" tableName="jhi_task">
+            <column name="due_date"/>
+        </createIndex>
+
+        <createIndex indexName="idx_task_status" tableName="jhi_task">
+            <column name="status"/>
+        </createIndex>
+    </changeSet>
+
+</databaseChangeLog>

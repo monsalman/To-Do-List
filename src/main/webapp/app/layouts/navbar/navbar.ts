@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 
@@ -9,13 +10,17 @@ import { environment } from 'environments/environment';
 import { AccountService } from 'app/core/auth/account.service';
 import { ProfileService } from 'app/layouts/profiles/profile.service';
 import { LoginService } from 'app/login/login.service';
-import HasAnyAuthorityDirective from 'app/shared/auth/has-any-authority.directive';
+
+import { I18nService } from 'app/shared/i18n/i18n.service';
+import { ThemeService } from 'app/shared/theme/theme.service';
+import { TranslatePipe } from 'app/shared/i18n/translate.pipe';
 
 @Component({
   selector: 'jhi-navbar',
   templateUrl: './navbar.html',
   styleUrl: './navbar.scss',
   imports: [
+    CommonModule,
     RouterLink,
     RouterLinkActive,
     FontAwesomeModule,
@@ -23,7 +28,7 @@ import HasAnyAuthorityDirective from 'app/shared/auth/has-any-authority.directiv
     NgbDropdown,
     NgbDropdownMenu,
     NgbDropdownToggle,
-    HasAnyAuthorityDirective,
+    TranslatePipe,
   ],
 })
 export default class Navbar implements OnInit {
@@ -32,6 +37,8 @@ export default class Navbar implements OnInit {
   readonly openAPIEnabled = signal(false);
   readonly version: string;
   readonly account = inject(AccountService).account;
+  readonly themeService = inject(ThemeService);
+  readonly i18n = inject(I18nService);
 
   private readonly loginService = inject(LoginService);
   private readonly profileService = inject(ProfileService);

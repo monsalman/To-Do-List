@@ -1,0 +1,106 @@
+<div class="td-modal-overlay" (click)="onOverlayClick($event)">
+  <div class="td-modal">
+    <div class="td-modal-header">
+      <h2>{{ isEditing ? ('task.editTask' | translate) : ('task.createTask' | translate) }}</h2>
+      <button class="td-btn td-btn-ghost td-btn-icon" (click)="cancel()">✕</button>
+    </div>
+
+    <div class="form-body">
+      <!-- Title -->
+      <div class="form-group">
+        <label class="td-label">{{ 'task.title' | translate }} *</label>
+        <input
+          class="td-input"
+          type="text"
+          [ngModel]="formData().title"
+          (ngModelChange)="updateField('title', $event)"
+          [placeholder]="i18n.t('task.title') + '...'"
+          id="task-title-input"
+          autofocus
+        />
+      </div>
+
+      <!-- Description -->
+      <div class="form-group">
+        <label class="td-label">{{ 'task.description' | translate }}</label>
+        <textarea
+          class="td-input td-textarea"
+          [ngModel]="formData().description"
+          (ngModelChange)="updateField('description', $event)"
+          [placeholder]="i18n.t('task.description') + '...'"
+          id="task-desc-input"
+        ></textarea>
+      </div>
+
+      <!-- Due Date -->
+      <div class="form-group">
+        <label class="td-label">{{ 'task.dueDate' | translate }}</label>
+        <input
+          class="td-input"
+          type="date"
+          [ngModel]="formData().dueDate"
+          (ngModelChange)="updateField('dueDate', $event)"
+          id="task-date-input"
+        />
+      </div>
+
+      <!-- Priority & Status Row -->
+      <div class="form-row">
+        <div class="form-group">
+          <label class="td-label">{{ 'task.priority' | translate }}</label>
+          <select
+            class="td-input td-select"
+            [ngModel]="formData().priority"
+            (ngModelChange)="updateField('priority', $event)"
+            id="task-priority-input"
+          >
+            <option value="HIGH">🔴 {{ 'task.high' | translate }}</option>
+            <option value="MEDIUM">🟡 {{ 'task.medium' | translate }}</option>
+            <option value="LOW">🟢 {{ 'task.low' | translate }}</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="td-label">{{ 'task.status' | translate }}</label>
+          <select
+            class="td-input td-select"
+            [ngModel]="formData().status"
+            (ngModelChange)="updateField('status', $event)"
+            id="task-status-input"
+          >
+            <option value="PENDING">{{ 'task.pendingStatus' | translate }}</option>
+            <option value="IN_PROGRESS">{{ 'task.inProgressStatus' | translate }}</option>
+            <option value="DONE">{{ 'task.doneStatus' | translate }}</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Group Assignment -->
+      <div class="form-group">
+        <label class="td-label">{{ 'task.group' | translate }}</label>
+        <select
+          class="td-input td-select"
+          [ngModel]="formData().groupId?.toString() ?? ''"
+          (ngModelChange)="onGroupChange($event)"
+          id="task-group-input"
+        >
+          <option value="">🔒 {{ 'task.personalTask' | translate }}</option>
+          @for (group of groups; track group.id) {
+            <option [value]="group.id!.toString()">👥 {{ group.name }}</option>
+          }
+        </select>
+      </div>
+    </div>
+
+    <div class="td-modal-actions">
+      <button class="td-btn td-btn-secondary" (click)="cancel()" id="task-cancel-btn">
+        {{ 'task.cancel' | translate }}
+      </button>
+      <button class="td-btn td-btn-primary" (click)="save()" [disabled]="!isValid || isSaving()" id="task-save-btn">
+        @if (isSaving()) {
+          <span class="spinner">⏳</span>
+        }
+        {{ 'task.save' | translate }}
+      </button>
+    </div>
+  </div>
+</div>

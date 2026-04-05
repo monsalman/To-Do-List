@@ -48,9 +48,9 @@
         <jib-maven-plugin.image>eclipse-temurin:21-jre-noble</jib-maven-plugin.image>
         <jib-maven-plugin.version>3.5.1</jib-maven-plugin.version>
         <lifecycle-mapping.version>1.0.0</lifecycle-mapping.version>
-        <liquibase-plugin.password/>
-        <liquibase-plugin.url/>
-        <liquibase-plugin.username/>
+        <liquibase-plugin.password>salman1234</liquibase-plugin.password>
+        <liquibase-plugin.url>jdbc:postgresql://localhost:5432/ToDoList</liquibase-plugin.url>
+        <liquibase-plugin.username>postgres</liquibase-plugin.username>
         <mapstruct.version>1.6.3</mapstruct.version>
         <maven-antrun-plugin.version>3.2.0</maven-antrun-plugin.version>
         <maven-checkstyle-plugin.version>3.6.0</maven-checkstyle-plugin.version>
@@ -820,9 +820,9 @@
             </activation>
             <properties>
                 <!-- default Spring profiles -->
-                <liquibase-plugin.password/>
+                <liquibase-plugin.password>salman1234</liquibase-plugin.password>
                 <liquibase-plugin.url>jdbc:postgresql://localhost:5432/ToDoList</liquibase-plugin.url>
-                <liquibase-plugin.username>ToDoList</liquibase-plugin.username>
+                <liquibase-plugin.username>postgres</liquibase-plugin.username>
                 <profile.test>test,testdev</profile.test>
                 <spring.profiles.active>dev${profile.tls}${profile.no-liquibase}</spring.profiles.active>
             </properties>
@@ -930,9 +930,9 @@
             <id>prod</id>
             <properties>
                 <!-- default Spring profiles -->
-                <liquibase-plugin.password/>
+                <liquibase-plugin.password>salman1234</liquibase-plugin.password>
                 <liquibase-plugin.url>jdbc:postgresql://localhost:5432/ToDoList</liquibase-plugin.url>
-                <liquibase-plugin.username>ToDoList</liquibase-plugin.username>
+                <liquibase-plugin.username>postgres</liquibase-plugin.username>
                 <profile.test>test,testprod</profile.test>
                 <spring.profiles.active>prod${profile.api-docs}${profile.tls}${profile.e2e}${profile.no-liquibase}</spring.profiles.active>
             </properties>
